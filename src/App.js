@@ -3,6 +3,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { Col, Row, Container } from 'react-bootstrap';
 import { getWeatherData } from './data/Weatherapi';
 import { useState, useEffect } from 'react';
+import {ScaleLoader} from 'react-spinners';
 
 function App() {
   const [weatherdata, setWeatherData] = useState(null);
@@ -11,15 +12,23 @@ function App() {
 
   const getData = async () => {
     try{
+      setLoading(true);
         const data = await getWeatherData(city);
         console.log(data)
         setWeatherData(data)
+        setLoading(false);
        
     }catch(error) {
       console.log(error.message);
       
     }
   }
+
+  const override = `
+  display: block;
+  margin: 0 auto;
+  border-color: red;
+  `;
   useEffect(() => {
     getData();
   }, []);
@@ -36,8 +45,21 @@ function App() {
     <div className="search-form">
           <input onChange={(e)=>setCity(e.target.value)}placeholder="Enter your city name" type="text" />
           <button onClick={()=>getData()}type="button">Search</button>
+
+      
         </div>
-      { weatherdata!== null ? ( 
+
+        { loading ?  (
+          <div className="loader-container">
+            <ScaleLoader
+              css={override}
+              size={200}
+              color= {"#fff"}
+              loading= {loading}
+              />
+          </div>
+        ) : ( <>
+          { weatherdata!== null ? ( 
           <div className="main-container">
           <h4>Live Weather Condition</h4>
           <div className="weather-icon">
@@ -57,6 +79,8 @@ function App() {
           </div>
           </div>
       ) : null }
+      
+        </>)}
       
   
     
